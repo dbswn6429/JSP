@@ -6,3 +6,10 @@
 1739944400085	Delete element
 1739946246293	Delete element
 1739947867611	Delete element
+1740018707878	Move 'META-INF' to 'request'
+1740018723268	Move 'META-INF' to 'webapp'
+1740022382737	Rename resource 'res_ex02.jsp'
+1740022972941	Delete element
+1740022989667	Rename resource 'quiz.jsp'
+1740033491805	Rename resource 'cookie.jsp'
+1740035612842	Rename resource 'cookie_result.jsp'
