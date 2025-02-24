@@ -4,6 +4,8 @@
     pageEncoding="UTF-8"%>
 
 <%
+	//vc역활을 하고 있음
+	
 	String departmentId = request.getParameter("departmentId");
 	//model로 연결
 	
@@ -15,5 +17,16 @@
 	//dto를 request에 저장함
 	request.setAttribute("dto", dto);
 	
-	request.getRequestDispatcher("index01_result.jsp").forward(request, response);
+	//dto에 값이 있으면, 부서정보페이지로 이동, 없으면 다시 원본페이지로 이동
+	if(dto.getDepartmentName()==null){
+%>	
+	<script>
+		alert("부서정보가 없습니다");
+		history.back(); //뒤로가기
+	</script>	
+<%
+	}else{
+		request.getRequestDispatcher("index01_result.jsp").forward(request, response);
+	}
+	
 %>
