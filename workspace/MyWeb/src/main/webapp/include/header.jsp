@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -21,22 +22,7 @@
 <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
 <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
 
-<!-- 모바일 슬라이드 -->
-<script type="text/javascript">
-   $(document).ready(function(){
-		var swiper = new Swiper('.swiper-container', {
-			loop: true,
-			autoplay:5500,
-		    autoplayDisableOnInteraction: false,
-			pagination: '.swiper-pagination',
-            paginationClickable: true
-		});
-	});
-</script>
 
-
-</head>
-<body>
 
 <!-- wrap -->
 <div id="wrap">
@@ -48,8 +34,16 @@
 			<!-- header_cont -->
 			<div class="header_cont">
 				<ul class="util clear">
-					<li><a href="javascript:;">로그인</a></li>
-					<li><a href="javascript:;">회원가입</a></li>
+				
+					<c:choose>
+					<c:when test="${sessionScope.userDTO == null }">
+						<li><a href="${pageContext.request.contextPath }/users/login.users">로그인</a></li>
+					</c:when>
+					<c:otherwise>
+						<li><a href="${pageContext.request.contextPath }/users/mypage.users">마이페이지</a></li>
+					</c:otherwise>
+					</c:choose>
+					<li><a href="${pageContext.request.contextPath }/users/join.users">회원가입</a></li>
 				</ul>	
 				<nav>
 				<ul class="gnb clear">

@@ -36,7 +36,7 @@
                         <li class="clear">
                             <label for="email_lbl" class="tit_lbl pilsoo_item">등록일</label>
                             <div class="app_content email_area">
-                                <input type="text" id="datepicker_a" placeholder="날짜를 선택하세요"></p>
+                                <input type="text" id="datepicker_a" placeholder="날짜를 선택하세요">
                             </div>
 						</li>
 						
