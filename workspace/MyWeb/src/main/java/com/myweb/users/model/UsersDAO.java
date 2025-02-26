@@ -120,7 +120,7 @@ public class UsersDAO {
 			
 			rs = pstmt.executeQuery();
 			
-			if(rs.next()) { //아이디 성공
+			if(rs.next()) { //아이디 비밀번호가 일치함
 				
 				String name = rs.getString("name");
 				String phone = rs.getString("phone");
@@ -131,47 +131,39 @@ public class UsersDAO {
 				dto = new UsersDTO(email, name, null, phone, gender, snsYn, regdate);
 			}
 			
-			
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
 			JdbcUtil.close(conn, pstmt, rs);
 		}
 		
-		
-		
 		return dto;
 	}
-	
-	public int modify(String name, String gender, String phone, String snsYn, String email) {
+ 	
+	//회원정보수정
+	public int modify(String name,
+					  String gender,
+					  String phone,
+					  String snsYn,
+					  String email) {
 		int result = 0;
 		
 		Connection conn = null;
 		PreparedStatement pstmt = null;
-
 		
-		String sql = "UPDATE USERS SET NAME = ?, GENDER=?,  PHONE = ?, SNS_YN = ? WHERE EMAIL = ? ";
+		String sql = "UPDATE USERS SET NAME = ?, GENDER = ?, PHONE =?, SNS_YN = ? WHERE EMAIL = ?";
 		
 		try {
 			
 			conn = dataSource.getConnection();
 			pstmt = conn.prepareStatement(sql);
-			pstmt.setString(1, name);
+			pstmt.setString(1, name );
 			pstmt.setString(2, gender);
 			pstmt.setString(3, phone);
 			pstmt.setString(4, snsYn);
 			pstmt.setString(5, email);
 			
-			int affectedRows = pstmt.executeUpdate();
-			
-			if (affectedRows > 0) {
-				result = 1;
-			} else {
-				result = 0;
-			}
-
-			
-			
+			result = pstmt.executeUpdate(); //성공시 1반환, 실패시 0
 			
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -182,9 +174,30 @@ public class UsersDAO {
 		return result;
 	}
 	
+	public int delete(String email) {
+		int result = 0;
+		
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		
+		String sql = "DELETE FROM USERS WHERE EMAIL=?";
+		
+		try {
+			
+			conn = dataSource.getConnection();
+	        pstmt = conn.prepareStatement(sql);
+	        pstmt.setString(1, email);
+			
+	        result = pstmt.executeUpdate();
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			JdbcUtil.close(conn, pstmt, null);
+		}
+		
+		return result;
+	}
  	
-	
-	
 	
 	
 	

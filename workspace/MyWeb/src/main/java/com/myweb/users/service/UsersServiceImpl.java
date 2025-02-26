@@ -1,6 +1,7 @@
 package com.myweb.users.service;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -86,55 +87,89 @@ public class UsersServiceImpl implements UsersService {
 		
 	}
 
-
 	@Override
 	public void modify(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
 		/*
-		 * update테이블명 set 업데이트할 값 where pk=?
-		 * 
-		 * 1. 화면에서 넘어온 값을 받습니다(이름, 성별, 번호, 수신여부)
-		 * 2. email값은 세션에서 얻습니다.
-		 * 3. DAO는 modify() 메서드를 생성을 하고 업데이트를 진행합니다.
+		 * update 테이블명 set 업데이트할 값 where pk = ?
+		 * 1. 화면에서 넘어온 값을 받습니다(이름, 성별, 휴대폰, 수신여부)
+		 * 2. email값은 세션에서 얻습니다. 
+		 * 3. DAO는 modify() 메서드를 생성을하고 업데이트를 진행합니다.
 		 * 4. DAO 성공시 1을 반환하고, 실패시 0을 반환합니다.
 		 * 5. 서비스에서는 정보수정성공시에 메인페이지로 이동, 실패시에는 mypage로 이동
 		 */
 		
 		String name = request.getParameter("name");
-		String gender = request.getParameter("gender");
+		String gender =request.getParameter("gender");
 		String phone = request.getParameter("phone");
-		String snsYn = request.getParameter("sns_Yn");
-		
+		String snsYn = request.getParameter("sns_yn");
+		//이메일은 세션
 		HttpSession session = request.getSession();
-		UsersDTO dto = (UsersDTO) session.getAttribute("userDTO");
+		UsersDTO dto = (UsersDTO)session.getAttribute("userDTO");
+		String email = dto.getEmail();
 		
+		if (gender == null || !(gender.equals("M") || gender.equals("F"))) {
+	        gender = "M";  // 기본값으로 "M"을 설정
+	    }
+
+		//dao호출
+		UsersDAO dao = UsersDAO.getInstance();
+		int result = dao.modify(name, gender, phone, snsYn, email);
 		
-		if (dto == null) {
-			response.sendRedirect("login.jsp");
-			return;
+		if(result == 1) { //성공
+			//세션의 정보도 업데이트
+			UsersDTO userDTO = new UsersDTO(email, name, null, phone, gender, snsYn, null);
+			session.setAttribute("userDTO", userDTO);
+			
+			//화면에 메시지를 보내는 또다른 방법 (out객체 사용)
+			response.setContentType("text/html; charset=UTF-8;");
+			PrintWriter out = response.getWriter();
+			out.println("<script>");
+			out.println("alert('정보가 수정되었습니다');");
+			out.println("location.href='/MyWeb/index.jsp';");
+			out.println("</script>");
+			
+		} else { //실패
+			response.sendRedirect("mypage.users");
 		}
 		
-		String email = dto.getEmail(); 
 		
-	    if (gender == null || !(gender.equals("M") || gender.equals("F"))) {
-	        gender = "M";  
-	    }
-	    
-		dto.setName(name);
-        dto.setGender(gender);
-        dto.setPhone(phone);
-        dto.setSnsYn(snsYn);
+		
+	}
 
-        UsersDAO dao = UsersDAO.getInstance();
-	    int result = dao.modify(name, gender, phone, snsYn, email);
-	    
-	    if (result == 1) {
+
+	@Override
+	public void delete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		
+		/*
+		 * 1.delete from 테이블명 where 키 = ?
+		 * 2.이메일은 세션이 있습니다.
+		 * 3.이메일을 얻어서 dao에서 삭제를 진행하면 됩니다.
+		 * 4.삭제 성공시에는 세션을 삭제하고 메인페이지 이동(메시지도 띄워주세요.) 
+		 * 
+		 * ,실패시에는 마이페이지로 이동
+		 */
+		
+		HttpSession session = request.getSession();
+		UsersDTO dto = (UsersDTO)session.getAttribute("userDTO");
+		
+		String email = dto.getEmail();
+		
+		UsersDAO dao = UsersDAO.getInstance();
+		int result = dao.delete(email);
+		
+		if( result == 1) { //성공 
+			session.invalidate();
+			
+			response.setContentType("text/html; charset=UTF-8;");
+			PrintWriter out = response.getWriter();
+			out.println("<script>");
+			out.println("alert('회원 탈퇴가 완료되었습니다. 이용해 주셔서 감사합니다.');");
+	        out.println("location.href='/MyWeb/index.jsp';");
+	        out.println("</script>");
 	        
-	        session.setAttribute("userDTO", dto);
-	        response.sendRedirect("../index.jsp");
-	    } else {
-	        request.setAttribute("msg", "정보 수정에 실패했습니다.");
-	        request.getRequestDispatcher("mypage.jsp").forward(request, response);
-	    }
+		} else { //삭제 실패
+			response.sendRedirect("mypage.users");
+		}
 	}
 }
