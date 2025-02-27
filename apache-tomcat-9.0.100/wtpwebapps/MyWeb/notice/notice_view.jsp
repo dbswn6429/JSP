@@ -1,10 +1,9 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>	
-<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>	
-
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 	<%@ include file="../include/header.jsp" %>
-	
+
 	<div id="container">
 		<!-- location_area -->
 		<div class="location_area customer">
@@ -18,28 +17,31 @@
 			</div>
 		</div>	
 		<!-- //location_area -->
-		<fmt:parseDate var="time" value="${dto.regdate }" pattern = "yyyy-MM-dd HH:mm:ss"/>
-							
+		
 		<!-- bodytext_area -->
 		<div class="bodytext_area box_inner">			
 			<ul class="bbsview_list">
 				<li class="bbs_title">${dto.title }</li>
-				<li class="bbs_hit">작성일 : <span><fmt:formatDate value="${time }" pattern="yyyy년 MM월 dd일" /></span></li>
+				<li class="bbs_hit">작성일 : <span>${dto.regdate }</span></li>
 				<li class="bbs_date">작성자 : <span>${dto.email }</span></li>
 				<li class="bbs_content">
 					<div class="editer_content">
-					    ${dto.content }
+					   ${dto.content }
                     </div>
 				</li>
 			</ul>
 			<p class="btn_line txt_right">
-				<a href="javascript:;" class="btn_bbs">글삭제</a>
-				<a href="javascript:;" class="btn_bbs">글수정</a>
-				<a href="javascript:;" class="btn_bbs">목록</a>
+				
+				<c:if test="${sessionScope.userDTO.email == dto.email  }">
+				<a href="delete.board?bno=${dto.bno }&email=${dto.email}" class="btn_bbs">글삭제</a>
+				<a href="modify.board?bno=${dto.bno }&email=${dto.email}" class="btn_bbs">글수정</a>
+				</c:if>
+				
+				<a href="list.board" class="btn_bbs">목록</a>
 			</p>
 			<ul class="near_list mt20">
-				<li><h4 class="prev">다음글</h4><a href="javascript:;">추석 연휴 티켓/투어 배송 및 직접 수령 안내</a></li>		
-				<li><h4 class="next">이전글</h4><a href="javascript:;">이번 여름 휴가 제주 갈까? 미션 투어 (여행경비 50만원 지원)</a></li>
+				<li><h4 class="prev">이전글</h4><a href="getContent.board?bno=${dto.prevNo == 0 ? dto.bno : dto.prevNo }">${dto.prevTitle }</a></li>		
+				<li><h4 class="next">다음글</h4><a href="getContent.board?bno=${dto.nextNo == 0 ? dto.bno : dto.nextNo }">${dto.nextTitle }</a></li>
 			</ul>
 		</div>
 		<!-- //bodytext_area -->
@@ -47,4 +49,9 @@
 	</div>
 	<!-- //container -->
 
-	<%@ include file="../include/footer.jsp" %>
+		<%@ include file="../include/footer.jsp" %>
+		
+		
+		
+		
+	
